@@ -1,0 +1,50 @@
+apply plugin: 'com.android.application'
+/*
+如果一个项目有多个 build.gradle
+ 主 Model App ---->build.gradle
+ 副Model --> build.gradle
+
+ //如何做到下面三点
+ 1.统一性  如果主 build.gradle compileSdkVersion是28 然而 其他的  build.gradle并不是28 此时需要一个便于修改的管理 即自定义Gradle配置文件
+ 2.便于管理   通过一个文件修改所有Model 所有的管理
+ 3.版本控制
+
+ 创建自定义Gradle 配置文件
+* */
+//引入自定义的配置属性
+android {
+    compileSdkVersion rootProject.ext.android["compileSdkVersion"]
+    buildToolsVersion rootProject.ext.android["buildToolsVersion"]
+    defaultConfig {
+        applicationId rootProject.ext.android["applicationId"]
+        minSdkVersion rootProject.ext.android["minSdkVersion"]
+        targetSdkVersion rootProject.ext.android["targetSdkVersion"]
+        versionCode rootProject.ext.android["versionCode"]
+        versionName rootProject.ext.android["versionName"]
+        testInstrumentationRunner rootProject.ext.android["testInstrumentationRunner"]
+    }
+    buildTypes {
+        debug{
+            //自定义Gradle常量
+            buildConfigField("boolean","LOG_DEBUG","true")
+            buildConfigField("String","LOG_TAG","\"MeetMe\"")
+            buildConfigField("String","SP_NAME","\"Config\"")
+        }
+        release {
+            buildConfigField("boolean","LOG_DEBUG","false")
+            buildConfigField("String","LOG_TAG","\"MeetMe\"")
+            buildConfigField("String","SP_NAME","\"Config\"")
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation rootProject.ext.dependencies["appcompat"]
+    implementation rootProject.ext.dependencies["constraintlayout"]
+    testImplementation rootProject.ext.dependencies["junit"]
+    androidTestImplementation rootProject.ext.dependencies["espresso"]
+    androidTestImplementation rootProject.ext.dependencies["testext"]
+}
