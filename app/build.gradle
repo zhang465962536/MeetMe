@@ -11,8 +11,27 @@ apply plugin: 'com.android.application'
 
  创建自定义Gradle 配置文件
 * */
+/*
+Gradle构建的三个性能指标
+1. 全量编译：全部编译 相当于第一次open Project
+2.代码增量编译 ： 修改了 java下面的代码的时候编译
+2.资源增量编译 ： 修改了 res下面的资源文件的时候编译
+
+发布App到应用市场，多渠道打包/全部打包
+调试：不需要那么多，DEBUG
+
+在setting 里面的 Compiler 输入 -PdevBuild 加快Gradle 构建 发布的时候 去掉
+*/
 //引入自定义的配置属性
 android {
+    //发布的时候 去掉
+    if(rootProject.hasProperty('devBuild')){ //如果项目有该属性 就是调试状态
+        splits.abi.enable = false
+        splits.density.enable = false
+        //禁用PNG压缩
+        aaptOptions.cruncherEnabled = false
+    }
+
     compileSdkVersion rootProject.ext.android["compileSdkVersion"]
     buildToolsVersion rootProject.ext.android["buildToolsVersion"]
     defaultConfig {
@@ -22,6 +41,10 @@ android {
         versionCode rootProject.ext.android["versionCode"]
         versionName rootProject.ext.android["versionName"]
         testInstrumentationRunner rootProject.ext.android["testInstrumentationRunner"]
+
+        //调试版本使用 正式发布版本可以去掉
+        //最小化打包资源文件
+        resConfigs("zh","xxhdpi")
     }
     buildTypes {
         debug{
