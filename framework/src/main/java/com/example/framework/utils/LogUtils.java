@@ -19,13 +19,15 @@ import java.util.Date;
 //LogUtil 不仅仅可以打印日志 还可以将日志写入文件中 进行记录
 public class LogUtils {
 
-    private static SimpleDateFormat mSimpleDateFormat = new SimpleDateFormat("YYYY-MM-dd HH:mm:ss");
+    private static SimpleDateFormat mSimpleDateFormat =
+            new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     public static void i(String text) {
         //因为打印log 只有在调试运行才使用 正式发布并不会使用 所以先判断是否是调试运行 再去判空比较稳妥
         if (BuildConfig.LOG_DEBUG) {
             if (!TextUtils.isEmpty(text)) {
                 Log.i(BuildConfig.LOG_TAG, text);
+                //writeToFile(text);
             }
         }
     }
