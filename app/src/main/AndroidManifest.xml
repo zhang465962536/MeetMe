@@ -22,9 +22,9 @@
 
         <activity android:name=".ui.LoginActivity"></activity>
         <activity android:name=".MainActivity" />
-        <activity android:name=".ui.GuideActivity" />
+        <activity android:name=".ui.IndexActivity" />
         <activity
-            android:name=".ui.IndexActivity"
+            android:name=".ui.GuideActivity"
             android:theme="@style/AppThemeFull">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
