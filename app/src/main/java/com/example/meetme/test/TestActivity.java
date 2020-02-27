@@ -25,7 +25,7 @@ public class TestActivity extends AppCompatActivity {
         TouchPictureV.setViewResultListener(new TouchPictureV.OnViewResultListener() {
             @Override
             public void onResult() {
-                ToastUtil.QuickToast(getApplicationContext(),"验证通过");
+                ToastUtil.QuickToast("验证通过");
             }
         });
     }

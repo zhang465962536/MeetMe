@@ -11,7 +11,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
-        <activity android:name=".ui.LoginActivity"></activity>
+        <activity android:name=".test.TestActivity"></activity>
         <activity
             android:name=".ui.GuideActivity"
             android:theme="@style/AppThemeFull" />
@@ -20,7 +20,7 @@
             android:name=".ui.IndexActivity"
             android:theme="@style/AppThemeFull" />
         <activity
-            android:name=".test.TestActivity"
+            android:name=".ui.LoginActivity"
             android:theme="@style/AppThemeFull">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -28,6 +28,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <provider
+            android:name="cn.bmob.v3.util.BmobContentProvider"
+            android:authorities="com.example.meetme.BmobContentProvider">
+        </provider>
 
         <!-- OPPO 刘海屏适配 -->
         <meta-data

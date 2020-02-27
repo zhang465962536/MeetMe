@@ -5,7 +5,13 @@ import android.widget.Toast;
 
 public class ToastUtil {
 
-    public static void QuickToast(Context context,String text){
-        Toast.makeText(context,text,Toast.LENGTH_SHORT).show();
+    private static Context mContext;
+
+    public static void initToast(Context context){
+        mContext = context;
+    }
+
+    public static void QuickToast(String text){
+        Toast.makeText(mContext,text,Toast.LENGTH_SHORT).show();
     }
 }

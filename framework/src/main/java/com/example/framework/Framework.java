@@ -3,8 +3,10 @@ package com.example.framework;
 
 import android.content.Context;
 
+import com.example.framework.bmob.BmobManager;
 import com.example.framework.utils.LogUtils;
 import com.example.framework.utils.SpUtils;
+import com.example.framework.utils.ToastUtil;
 
 //创建Framework Molde隔离工具类 和逻辑代码
 public class Framework {
@@ -35,8 +37,9 @@ public class Framework {
     public void initFramework(Context mContext) {
         LogUtils.i("initFramework");
         SpUtils.getInstance().initSp(mContext);
-      /*  BmobManager.getInstance().initBmob(mContext);
-        CloudManager.getInstance().initCloud(mContext);
+       BmobManager.getInstance().initBmob(mContext);
+        ToastUtil.initToast(mContext);
+        /*CloudManager.getInstance().initCloud(mContext);
         LitePal.initialize(mContext);
         MapManager.getInstance().initMap(mContext);
         WindowHelper.getInstance().initWindow(mContext);
