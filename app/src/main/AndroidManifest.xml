@@ -10,21 +10,17 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <!--OPPO 刘海屏适配-->
-        <meta-data
-            android:name="android.max_aspect"
-            android:value="2.2" />
-
-        <!--小米水滴屏幕适配-->
-        <meta-data
-            android:name="notch.config"
-            android:value="portrait|landscape" />
 
         <activity android:name=".ui.LoginActivity"></activity>
-        <activity android:name=".MainActivity" />
-        <activity android:name=".ui.IndexActivity" />
         <activity
             android:name=".ui.GuideActivity"
+            android:theme="@style/AppThemeFull" />
+        <activity android:name=".MainActivity" />
+        <activity
+            android:name=".ui.IndexActivity"
+            android:theme="@style/AppThemeFull" />
+        <activity
+            android:name=".test.TestActivity"
             android:theme="@style/AppThemeFull">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -32,6 +28,15 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <!-- OPPO 刘海屏适配 -->
+        <meta-data
+            android:name="android.max_aspect"
+            android:value="2.2" /> <!-- 小米水滴屏幕适配 -->
+        <meta-data
+            android:name="notch.config"
+            android:value="portrait|landscape" />
     </application>
+
 
 </manifest>
