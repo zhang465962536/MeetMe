@@ -1,7 +1,10 @@
 package com.example.meetme;
 
+import android.Manifest;
 import android.content.res.AssetFileDescriptor;
 import android.os.Bundle;
+
+import androidx.annotation.NonNull;
 
 import com.example.framework.base.BaseUIActivity;
 import com.example.framework.bmob.BmobManager;
@@ -19,7 +22,8 @@ public class MainActivity extends BaseUIActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        IMUser imUser = BmobManager.getInstance().getUser();
-        ToastUtil.QuickToast("imUser  " + imUser.getMobilePhoneNumber());
+
     }
+
+
 }

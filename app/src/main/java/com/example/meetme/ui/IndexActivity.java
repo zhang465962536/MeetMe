@@ -9,6 +9,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.text.TextUtils;
 
+import com.example.framework.bmob.BmobManager;
 import com.example.framework.entity.Constants;
 import com.example.framework.utils.SpUtils;
 import com.example.meetme.MainActivity;
@@ -58,11 +59,17 @@ public class IndexActivity extends AppCompatActivity {
             //跳转之后 设置 不是第一次启动
             SpUtils.getInstance().putBoolean(Constants.SP_IS_FIRST_APP,false);
         }else {
-            // 2 如果非第一次启动 判断 是否登录过
+            // 2. 如果非第一次启动 判断 是否登录过
             String token = SpUtils.getInstance().getString(Constants.SP_TOKEN,"");
             if(TextUtils.isEmpty(token)){
-                //跳转到登录页
-                intent.setClass(this,LoginActivity.class);
+                // 3. 判断bmob是否登录
+                if(BmobManager.getInstance().isLogin()){
+                    //已经登录 跳转到主页
+                    intent.setClass(this, MainActivity.class);
+                }else {
+                    //跳转到登录页
+                    intent.setClass(this,LoginActivity.class);
+                }
             }else {
                 //跳转到主页
                 intent.setClass(this, MainActivity.class);

@@ -15,12 +15,12 @@
         <activity
             android:name=".ui.GuideActivity"
             android:theme="@style/AppThemeFull" />
-        <activity android:name=".MainActivity" />
+        <activity android:name=".ui.LoginActivity" />
         <activity
             android:name=".ui.IndexActivity"
             android:theme="@style/AppThemeFull" />
         <activity
-            android:name=".ui.LoginActivity"
+            android:name=".MainActivity"
             android:theme="@style/AppThemeFull">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
