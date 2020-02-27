@@ -1,6 +1,11 @@
 package com.example.framework;
 //Framework入口
 
+import android.content.Context;
+
+import com.example.framework.utils.LogUtils;
+import com.example.framework.utils.SpUtils;
+
 //创建Framework Molde隔离工具类 和逻辑代码
 public class Framework {
     //单例封装通用工具
@@ -20,5 +25,32 @@ public class Framework {
             }
         }
         return mFramework;
+    }
+
+    /**
+     * 初始化框架 Model
+     *
+     * @param mContext
+     */
+    public void initFramework(Context mContext) {
+        LogUtils.i("initFramework");
+        SpUtils.getInstance().initSp(mContext);
+      /*  BmobManager.getInstance().initBmob(mContext);
+        CloudManager.getInstance().initCloud(mContext);
+        LitePal.initialize(mContext);
+        MapManager.getInstance().initMap(mContext);
+        WindowHelper.getInstance().initWindow(mContext);
+        CrashReport.initCrashReport(mContext, BUGLY_KEY, BuildConfig.LOG_DEBUG);
+        ZXingLibrary.initDisplayOpinion(mContext);
+        NotificationHelper.getInstance().createChannel(mContext);
+        KeyWordManager.getInstance().initManager(mContext);*/
+
+/*        //全局捕获RxJava异常
+        RxJavaPlugins.setErrorHandler(new Consumer<Throwable>() {
+            @Override
+            public void accept(Throwable throwable) throws Exception {
+                LogUtils.e("RxJava：" + throwable.toString());
+            }
+        });*/
     }
 }

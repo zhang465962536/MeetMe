@@ -25,7 +25,7 @@ Gradle构建的三个性能指标
 //引入自定义的配置属性
 android {
     //发布的时候 去掉
-    if(rootProject.hasProperty('devBuild')){ //如果项目有该属性 就是调试状态
+    if (rootProject.hasProperty('devBuild')) { //如果项目有该属性 就是调试状态
         splits.abi.enable = false
         splits.density.enable = false
         //禁用PNG压缩
@@ -44,19 +44,19 @@ android {
 
         //调试版本使用 正式发布版本可以去掉
         //最小化打包资源文件
-        resConfigs("zh","xxhdpi")
+        resConfigs("zh", "xxhdpi")
     }
     buildTypes {
-        debug{
+        debug {
             //自定义Gradle常量
-            buildConfigField("boolean","LOG_DEBUG","true")
-            buildConfigField("String","LOG_TAG","\"MeetMe\"")
-            buildConfigField("String","SP_NAME","\"Config\"")
+            buildConfigField("boolean", "LOG_DEBUG", "true")
+            buildConfigField("String", "LOG_TAG", "\"MeetMe\"")
+            buildConfigField("String", "SP_NAME", "\"Config\"")
         }
         release {
-            buildConfigField("boolean","LOG_DEBUG","false")
-            buildConfigField("String","LOG_TAG","\"MeetMe\"")
-            buildConfigField("String","SP_NAME","\"Config\"")
+            buildConfigField("boolean", "LOG_DEBUG", "false")
+            buildConfigField("String", "LOG_TAG", "\"MeetMe\"")
+            buildConfigField("String", "SP_NAME", "\"Config\"")
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
@@ -67,6 +67,8 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation rootProject.ext.dependencies["appcompat"]
     implementation rootProject.ext.dependencies["constraintlayout"]
+    implementation 'androidx.appcompat:appcompat:1.1.0'
+    implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
     testImplementation rootProject.ext.dependencies["junit"]
     androidTestImplementation rootProject.ext.dependencies["espresso"]
     androidTestImplementation rootProject.ext.dependencies["testext"]
