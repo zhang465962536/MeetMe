@@ -21,6 +21,7 @@ import com.example.framework.utils.LogUtils;
 import com.example.framework.utils.SpUtils;
 import com.example.framework.utils.ToastUtil;
 import com.example.framework.view.DialogView;
+import com.example.framework.view.LoadingView;
 import com.example.framework.view.TouchPictureV;
 import com.example.meetme.MainActivity;
 import com.example.meetme.R;
@@ -47,7 +48,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
     private DialogView mCodeView;
     private TouchPictureV mPictureV;
-
+    private LoadingView mLoadingView;
     private static final int H_TIME = 1001;
 
     //60S倒计时
@@ -100,6 +101,9 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     }
 
     private void initDialogView() {
+
+        mLoadingView = new LoadingView(this);
+
         mCodeView = DialogManager.getInstance().initView(this,R.layout.dialog_code_view);
         mPictureV = mCodeView.findViewById(R.id.mPictureV);
         mPictureV.setViewResultListener(new TouchPictureV.OnViewResultListener() {
@@ -115,7 +119,13 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.btn_send_code:
-                DialogManager.getInstance().show(mCodeView);
+                final String phone = et_phone.getText().toString().trim();
+                if(!TextUtils.isEmpty(phone)){
+                    DialogManager.getInstance().show(mCodeView);
+                }else {
+                    ToastUtil.QuickToast(getString(R.string.text_login_phone_null));
+                    return;
+                }
                 break;
             case R.id.btn_login:
                 login();
@@ -138,11 +148,15 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             return;
         }
 
+        //显示Loading
+        mLoadingView.show("正在登录...");
+
         BmobManager.getInstance().signOrLoginByMobilePhone(phone, code, new LogInListener<IMUser>() {
             @Override
             public void done(IMUser imUser, BmobException e) {
                 if(e == null){
                     //登录成功
+                    mLoadingView.hide();
                     startActivity(new Intent(LoginActivity.this, MainActivity.class));
                     //把手机号码保存下来
                     SpUtils.getInstance().putString(Constants.SP_PHONE,phone);
