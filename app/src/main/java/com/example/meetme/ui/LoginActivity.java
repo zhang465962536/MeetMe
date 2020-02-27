@@ -16,9 +16,12 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.framework.bmob.BmobManager;
 import com.example.framework.bmob.IMUser;
 import com.example.framework.entity.Constants;
+import com.example.framework.manager.DialogManager;
 import com.example.framework.utils.LogUtils;
 import com.example.framework.utils.SpUtils;
 import com.example.framework.utils.ToastUtil;
+import com.example.framework.view.DialogView;
+import com.example.framework.view.TouchPictureV;
 import com.example.meetme.MainActivity;
 import com.example.meetme.R;
 
@@ -41,6 +44,9 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     private Button btn_login;
     private TextView tv_test_login;
     private TextView tv_user_agreement;
+
+    private DialogView mCodeView;
+    private TouchPictureV mPictureV;
 
     private static final int H_TIME = 1001;
 
@@ -74,6 +80,9 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     }
 
     private void initView() {
+        //初始化Dialog
+        initDialogView();
+
         et_phone = (EditText) findViewById(R.id.et_phone);
         et_code = (EditText) findViewById(R.id.et_code);
         btn_send_code = (Button) findViewById(R.id.btn_send_code);
@@ -90,11 +99,23 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         }
     }
 
+    private void initDialogView() {
+        mCodeView = DialogManager.getInstance().initView(this,R.layout.dialog_code_view);
+        mPictureV = mCodeView.findViewById(R.id.mPictureV);
+        mPictureV.setViewResultListener(new TouchPictureV.OnViewResultListener() {
+            @Override
+            public void onResult() {
+                sendSMS();
+                DialogManager.getInstance().hide(mCodeView);
+            }
+        });
+    }
+
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.btn_send_code:
-                sendSMS();
+                DialogManager.getInstance().show(mCodeView);
                 break;
             case R.id.btn_login:
                 login();
