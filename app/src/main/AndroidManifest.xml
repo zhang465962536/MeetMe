@@ -15,10 +15,11 @@
         <activity
             android:name=".ui.GuideActivity"
             android:theme="@style/AppThemeFull" />
-        <activity android:name=".ui.LoginActivity" />
+        <activity android:name=".ui.LoginActivity"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
         <activity
             android:name=".ui.IndexActivity"
-            android:theme="@style/AppThemeFull" />
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
         <activity
             android:name=".MainActivity"
             android:theme="@style/AppThemeFull">
