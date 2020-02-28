@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -15,6 +16,8 @@ import com.example.framework.helper.GlideHelper;
 import com.example.framework.utils.LogUtils;
 import com.example.meetme.R;
 import com.example.meetme.model.AddFriendModel;
+
+import org.w3c.dom.Text;
 
 import java.util.List;
 
@@ -62,7 +65,7 @@ public class AddFriendAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             ((TitleViewHolder)holder).tv_title.setText(model.getTitle());
         }else if(model.getType() == TYPE_CONTENT){
             //设置头像
-           /* GlideHelper.loadUrl(model.getPhoto(), ((ContentViewHolder)holder).iv_photo);*/
+           GlideHelper.loadUrl(mContext,model.getPhoto(), ((ContentViewHolder)holder).iv_photo);
             //设置性别
             ((ContentViewHolder)holder).iv_sex.setImageResource(model.isSex()?R.drawable.img_boy_icon:R.drawable.img_girl_icon);
             //设置昵称
@@ -71,6 +74,14 @@ public class AddFriendAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             ((ContentViewHolder)holder).tv_age.setText(model.getAge());
             //设置个性签名
             ((ContentViewHolder)holder).tv_desc.setText(model.getDesc());
+
+            //通讯录导入使用
+            if(model.isContact()){
+                ((ContentViewHolder)holder).ll_contact_info.setVisibility(View.VISIBLE);
+                ((ContentViewHolder)holder).tv_contact_name.setText(model.getContactName());
+                ((ContentViewHolder)holder).tv_contact_phone.setText(model.getContactPhone());
+
+            }
         }
 
         //点击事件
@@ -112,8 +123,17 @@ public class AddFriendAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         private TextView tv_age;
         private TextView tv_desc;
 
+        private LinearLayout ll_contact_info;
+        private TextView tv_contact_name;
+        private TextView tv_contact_phone;
+
         public ContentViewHolder(@NonNull View itemView) {
             super(itemView);
+
+            ll_contact_info = itemView.findViewById(R.id.ll_contact_info);
+            tv_contact_name = itemView.findViewById(R.id.tv_contact_name);
+            tv_contact_phone = itemView.findViewById(R.id.tv_contact_phone);
+
             iv_photo = itemView.findViewById(R.id.iv_photo);
             iv_sex = itemView.findViewById(R.id.iv_sex);
             tv_nickname = itemView.findViewById(R.id.tv_nickname);

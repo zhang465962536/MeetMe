@@ -5,17 +5,22 @@ public class AddFriendModel {
 
     //类型
     private int type;
+
     //标题
     private String title;
 
     //内容
     private String userId;
-    private  String photo;
+    private String photo;
     private boolean sex;
     private int age;
     private String nickName;
     private String desc;
 
+    //联系人
+    private boolean isContact = false;
+    private String contactName;
+    private String contactPhone;
 
     public int getType() {
         return type;
@@ -79,5 +84,29 @@ public class AddFriendModel {
 
     public void setDesc(String desc) {
         this.desc = desc;
+    }
+
+    public boolean isContact() {
+        return isContact;
+    }
+
+    public void setContact(boolean contact) {
+        isContact = contact;
+    }
+
+    public String getContactName() {
+        return contactName;
+    }
+
+    public void setContactName(String contactName) {
+        this.contactName = contactName;
+    }
+
+    public String getContactPhone() {
+        return contactPhone;
+    }
+
+    public void setContactPhone(String contactPhone) {
+        this.contactPhone = contactPhone;
     }
 }

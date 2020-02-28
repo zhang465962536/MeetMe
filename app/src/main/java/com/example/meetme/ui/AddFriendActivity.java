@@ -140,10 +140,10 @@ public class AddFriendActivity extends AppCompatActivity implements View.OnClick
         switch (view.getId()) {
             //跳转到从通讯录导入
             case R.id.ll_to_contact:
-                startActivity(new Intent(this, ContactFirendActivity.class));
+                startActivity(new Intent(AddFriendActivity.this, ContactFirendActivity.class));
               /*  //处理权限
                 if (checkPermissions(Manifest.permission.READ_CONTACTS)) {
-
+                    startActivity(new Intent(this, ContactFirendActivity.class));
                 } else {
                     requestPermission(new String[]{Manifest.permission.READ_CONTACTS});
                 }*/
