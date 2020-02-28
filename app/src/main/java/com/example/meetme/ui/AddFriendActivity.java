@@ -14,6 +14,8 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
+import com.example.framework.adapter.CommomViewHolder;
+import com.example.framework.adapter.CommonAdapter;
 import com.example.framework.base.BaseBackActivity;
 import com.example.framework.bmob.BmobManager;
 import com.example.framework.bmob.IMUser;
@@ -55,7 +57,7 @@ public class AddFriendActivity extends AppCompatActivity implements View.OnClick
 
     private View include_empty_view;
 
-    //private CommonAdapter mAddFriendAdapter; //todo
+    private CommonAdapter mAddFriendAdapter; //todo
     private List<AddFriendModel> mList = new ArrayList<>();
 
     @Override
@@ -87,14 +89,14 @@ public class AddFriendActivity extends AppCompatActivity implements View.OnClick
         mSearchResultView.setLayoutManager(new LinearLayoutManager(this));
         mSearchResultView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
 
-     /*   mAddFriendAdapter = new CommonAdapter<>(mList, new CommonAdapter.OnMoreBindDataListener<AddFriendModel>() {
+        mAddFriendAdapter = new CommonAdapter<>(mList, new CommonAdapter.OnMoreBindDataListener<AddFriendModel>() {
             @Override
             public int getItemType(int position) {
                 return mList.get(position).getType();
             }
 
             @Override
-            public void onBindViewHolder(final AddFriendModel model, CommonViewHolder viewHolder, int type, int position) {
+            public void onBindViewHolder(final AddFriendModel model, CommomViewHolder viewHolder, int type, final int position) {
                 if (type == TYPE_TITLE) {
                     viewHolder.setText(R.id.tv_title, model.getTitle());
                 } else if (type == TYPE_CONTENT) {
@@ -114,8 +116,9 @@ public class AddFriendActivity extends AppCompatActivity implements View.OnClick
                     viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            UserInfoActivity.startActivity(AddFriendActivity.this,
-                                    model.getUserId());
+                           /* UserInfoActivity.startActivity(AddFriendActivity.this,
+                                    model.getUserId());*/
+                           ToastUtil.QuickToast(" position " + position);
                         }
                     });
                 }
@@ -132,7 +135,7 @@ public class AddFriendActivity extends AppCompatActivity implements View.OnClick
             }
         });
 
-        mSearchResultView.setAdapter(mAddFriendAdapter);*/
+        mSearchResultView.setAdapter(mAddFriendAdapter);
     }
 
     @Override
@@ -159,19 +162,19 @@ public class AddFriendActivity extends AppCompatActivity implements View.OnClick
      */
     private void queryPhoneUser() {
         //1.获取电话号码
-        String phone = et_phone.getText().toString().trim();
+       final String phone = et_phone.getText().toString().trim();
         if (TextUtils.isEmpty(phone)) {
            ToastUtil.QuickToast(getString(R.string.text_login_phone_null));
             return;
         }
 
         //2.过滤自己
-        String phoneNumber = BmobManager.getInstance().getUser().getMobilePhoneNumber();
+      /*  String phoneNumber = BmobManager.getInstance().getUser().getMobilePhoneNumber();
         LogUtils.i("phoneNumber:" + phoneNumber);
         if (phone.equals(phoneNumber)) {
             ToastUtil.QuickToast(getString(R.string.text_add_friend_no_me));
             return;
-        }
+        }*/
 
         //3.查询
         BmobManager.getInstance().queryPhoneUser(phone, new FindListener<IMUser>() {
@@ -183,6 +186,7 @@ public class AddFriendActivity extends AppCompatActivity implements View.OnClick
                 }
                 if (CommonUtils.isEmpty(list)) {
                     IMUser imUser = list.get(0);
+                    LogUtils.i(" list " + list.get(0).toString());
                     include_empty_view.setVisibility(View.GONE);
                     mSearchResultView.setVisibility(View.VISIBLE);
 
@@ -191,10 +195,10 @@ public class AddFriendActivity extends AppCompatActivity implements View.OnClick
 
                     addTitle(getString(R.string.text_add_friend_title));
                     addContent(imUser);
-                   // mAddFriendAdapter.notifyDataSetChanged();
+                   mAddFriendAdapter.notifyDataSetChanged();
 
                     //推荐
-                   // pushUser(phone);
+                    pushUser(phone);
                 } else {
                     //显示空数据
                     include_empty_view.setVisibility(View.VISIBLE);
@@ -208,7 +212,7 @@ public class AddFriendActivity extends AppCompatActivity implements View.OnClick
      * 推荐好友
      * @param phone 过滤所查询的电话号码
      */
-    private void pushUser(String phone) {
+    private void pushUser(final String phone) {
         //查询所有的好友 取100个
         BmobManager.getInstance().queryAllUser(new FindListener<IMUser>() {
             @Override
@@ -225,14 +229,14 @@ public class AddFriendActivity extends AppCompatActivity implements View.OnClick
                                 continue;
                             }
                             //也不能查询到所查找的好友
-                           /* if (list.get(i).getMobilePhoneNumber().equals(phone)) {
+                            if (list.get(i).getMobilePhoneNumber().equals(phone)) {
                                 //跳过本次循环
                                 continue;
-                            }*/
+                            }
 
                             addContent(list.get(i));
                         }
-                        //mAddFriendAdapter.notifyDataSetChanged();
+                        mAddFriendAdapter.notifyDataSetChanged();
                     }
                 }
             }
