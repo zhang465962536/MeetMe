@@ -78,7 +78,7 @@ public class BaseActivity extends AppCompatActivity {
     }
 
     //请求权限 可以请求多个
-    protected void requestPersimission(String [] mPermissions){
+    protected void requestPermission(String [] mPermissions){
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
             requestPermissions(mPermissions,PERMISSION_REQUEST_CODE);
         }
@@ -87,7 +87,7 @@ public class BaseActivity extends AppCompatActivity {
     //申请所有权限
     protected void requestPermissionAll(OnPermissionsResult permissionsResult){
         this.permissionsResult =permissionsResult;
-        requestPersimission((String[]) mPerList.toArray(new String[mPerList.size()]));
+        requestPermission((String[]) mPerList.toArray(new String[mPerList.size()]));
     }
 
     //监听权限状态

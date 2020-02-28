@@ -1,7 +1,10 @@
 package com.example.meetme;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -9,18 +12,26 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.example.framework.base.BaseUIActivity;
+import com.example.framework.bmob.BmobManager;
+import com.example.framework.entity.Constants;
+import com.example.framework.manager.DialogManager;
 import com.example.framework.utils.LogUtils;
+import com.example.framework.utils.SpUtils;
+import com.example.framework.view.DialogView;
 import com.example.meetme.fragment.ChatFragment;
 import com.example.meetme.fragment.MeFragment;
 import com.example.meetme.fragment.SquareFragment;
 import com.example.meetme.fragment.StarFragment;
+import com.example.meetme.ui.FirstUploadActivity;
 
 import java.util.List;
 //主页
+
 /**
  * 1.初始化Frahment
  * 2.显示Fragment
@@ -57,6 +68,10 @@ public class MainActivity extends BaseUIActivity implements View.OnClickListener
     private LinearLayout ll_me;
     private MeFragment mMeFragment = null;
     private FragmentTransaction mMeTransaction = null;
+
+    private DialogView mUploadView;
+
+    private static final int UPLOAD_REQUEST_CODE = 1001;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -103,6 +118,57 @@ public class MainActivity extends BaseUIActivity implements View.OnClickListener
 
         //切换默认的选项卡
         checkMainTab(0);
+
+        //检查TOKEN
+        checkToken();
+    }
+
+    //检查TOKEN
+    private void checkToken() {
+        LogUtils.i("checkToken");
+        if(mUploadView != null){
+            DialogManager.getInstance().hide(mUploadView);
+        }
+        ////获取TOKEN 需要三个参数 1.用户ID 2.头像地址 3.昵称
+        String token = SpUtils.getInstance().getString(Constants.SP_TOKEN, "");
+        if(!TextUtils.isEmpty(token)){
+            startCloudService();
+        }else {
+            // 有三个参数
+            String tokenPhoto = BmobManager.getInstance().getUser().getTokenPhoto();
+            String tokenName = BmobManager.getInstance().getUser().getTokenNickName();
+            if (!TextUtils.isEmpty(tokenPhoto) && !TextUtils.isEmpty(tokenName)) {
+                //创建Token
+                createToken();
+            }else {
+                //创建上传提示框
+                createUploadDialog();
+            }
+        }
+    }
+
+    // 创建上传提示框
+    private void createUploadDialog() {
+        mUploadView = DialogManager.getInstance().initView(this,R.layout.dialog_first_upload);
+        //对话框外部无法点击
+        mUploadView.setCancelable(false);
+        ImageView iv_go_upload = mUploadView.findViewById(R.id.iv_go_upload);
+        iv_go_upload.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FirstUploadActivity.startActivity(MainActivity.this);
+            }
+        });
+        DialogManager.getInstance().show(mUploadView);
+    }
+
+    //创建TOKEN
+    private void createToken() {
+        LogUtils.e("createToken");
+    }
+
+    //启动云服务去连接融云服务
+    private void startCloudService() {
     }
 
     //初始化4个Fragment
@@ -273,7 +339,7 @@ public class MainActivity extends BaseUIActivity implements View.OnClickListener
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.ll_star:
-            checkMainTab(0);
+                checkMainTab(0);
                 break;
             case R.id.ll_square:
                 checkMainTab(1);
@@ -286,5 +352,16 @@ public class MainActivity extends BaseUIActivity implements View.OnClickListener
                 break;
 
         }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        if(resultCode == Activity.RESULT_OK){
+            if(requestCode == UPLOAD_REQUEST_CODE){
+                //说明上传头像成功
+                checkToken();
+            }
+        }
+        super.onActivityResult(requestCode, resultCode, data);
     }
 }
