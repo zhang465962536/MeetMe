@@ -19,6 +19,7 @@ import androidx.fragment.app.FragmentTransaction;
 import com.example.framework.base.BaseUIActivity;
 import com.example.framework.bmob.BmobManager;
 import com.example.framework.entity.Constants;
+import com.example.framework.java.SimulationData;
 import com.example.framework.manager.DialogManager;
 import com.example.framework.utils.LogUtils;
 import com.example.framework.utils.SpUtils;
@@ -121,6 +122,9 @@ public class MainActivity extends BaseUIActivity implements View.OnClickListener
 
         //检查TOKEN
         checkToken();
+
+        //模拟数据添加
+        //SimulationData.testData();
     }
 
     //检查TOKEN

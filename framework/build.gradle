@@ -50,4 +50,6 @@ dependencies {
     api rootProject.ext.dependencies["okhttp3"]
     api rootProject.ext.dependencies["tagcloud"]
     api rootProject.ext.dependencies["circleimageview"]
+    api 'com.android.support:design:28.0.0'
+    api rootProject.ext.dependencies["glide"]
 }

@@ -90,8 +90,11 @@ public class StarFragment extends BaseFragment implements View.OnClickListener {
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.iv_camera:
+                //扫描二维码
                 break;
             case R.id.iv_add:
+                //添加好友
+
                 break;
             case R.id.ll_random:
 

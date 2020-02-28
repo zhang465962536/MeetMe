@@ -5,10 +5,12 @@ import android.content.Context;
 import java.io.File;
 
 import cn.bmob.v3.Bmob;
+import cn.bmob.v3.BmobQuery;
 import cn.bmob.v3.BmobSMS;
 import cn.bmob.v3.BmobUser;
 import cn.bmob.v3.datatype.BmobFile;
 import cn.bmob.v3.exception.BmobException;
+import cn.bmob.v3.listener.FindListener;
 import cn.bmob.v3.listener.LogInListener;
 import cn.bmob.v3.listener.QueryListener;
 import cn.bmob.v3.listener.UpdateListener;
@@ -16,7 +18,9 @@ import cn.bmob.v3.listener.UploadFileListener;
 
 //管理Bomb 管理类
 public class BmobManager {
-    private static final String BMOB_SDK_ID = "5ce2e4e38f8b69676a6337097e7e8f43";
+   // private static final String BMOB_SDK_ID = "5ce2e4e38f8b69676a6337097e7e8f43";
+    private static final String BMOB_SDK_ID = "f8efae5debf319071b44339cf51153fc";
+
     private volatile static BmobManager mInstance = null;
 
     public BmobManager() {
@@ -100,5 +104,28 @@ public class BmobManager {
         void OnUpdateDone();
 
         void OnUpdateFail(BmobException e);
+    }
+
+    //查询基类
+    public void baseQuery(String key, String values, FindListener listener){
+        BmobQuery<IMUser> query = new BmobQuery<>();
+        query.addWhereEqualTo(key,values);
+        query.findObjects(listener);
+    }
+
+    //根据手机号码查询用户
+    public void queryPhoneUser(String phone,FindListener<IMUser> listener){
+        baseQuery("mobilePhoneNumber", phone, listener);
+    }
+
+    //根据objectId查询用户
+    public void queryObjectIdUser(String objectId, FindListener<IMUser> listener) {
+        baseQuery("objectId", objectId, listener);
+    }
+
+    //查询所有用户
+    public void queryAllUser(FindListener<IMUser> listener){
+        BmobQuery<IMUser> query = new BmobQuery<>();
+        query.findObjects(listener);
     }
 }

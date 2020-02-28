@@ -4,6 +4,7 @@ package com.example.framework;
 import android.content.Context;
 
 import com.example.framework.bmob.BmobManager;
+import com.example.framework.helper.GlideHelper;
 import com.example.framework.utils.LogUtils;
 import com.example.framework.utils.SpUtils;
 import com.example.framework.utils.ToastUtil;
