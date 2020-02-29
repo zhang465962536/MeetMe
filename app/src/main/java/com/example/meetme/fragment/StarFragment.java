@@ -1,5 +1,6 @@
 package com.example.meetme.fragment;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,6 +16,7 @@ import com.example.framework.adapter.CloudTagAdapter;
 import com.example.framework.base.BaseFragment;
 import com.example.framework.utils.ToastUtil;
 import com.example.meetme.R;
+import com.example.meetme.ui.AddFriendActivity;
 import com.moxun.tagcloudlib.view.TagCloudView;
 
 import java.util.ArrayList;
@@ -94,7 +96,7 @@ public class StarFragment extends BaseFragment implements View.OnClickListener {
                 break;
             case R.id.iv_add:
                 //添加好友
-
+                startActivity(new Intent(getActivity(), AddFriendActivity.class));
                 break;
             case R.id.ll_random:
 

@@ -11,7 +11,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".ui.TestLoginActivity"></activity>
+        <activity android:name=".ui.UserInfoActivity"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"></activity>
+        <activity android:name=".ui.TestLoginActivity" />
         <activity android:name=".ui.ContactFirendActivity" />
         <activity android:name=".ui.AddFriendActivity" /> <!-- 上传头像 -->
         <activity
@@ -37,7 +39,7 @@
             </intent-filter>
         </activity> <!-- 云服务 -->
         <service android:name=".service.CloudService" /> <!-- FileProvide  exported 不能跨进程访问 -->
-<!--离线消息-->
+        <!-- 离线消息 -->
         <receiver
             android:name=".receiver.SealNotificationReceiver"
             android:exported="true">
@@ -47,6 +49,7 @@
                 <action android:name="io.rong.push.intent.THIRD_PARTY_PUSH_STATE" />
             </intent-filter>
         </receiver>
+
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="com.example.meetme.fileprovider"

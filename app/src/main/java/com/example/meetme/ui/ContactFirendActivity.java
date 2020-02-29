@@ -13,6 +13,7 @@ import android.view.View;
 
 import com.example.framework.adapter.CommomViewHolder;
 import com.example.framework.adapter.CommonAdapter;
+import com.example.framework.base.BaseBackActivity;
 import com.example.framework.bmob.BmobManager;
 import com.example.framework.bmob.IMUser;
 import com.example.framework.utils.CommonUtils;
@@ -29,7 +30,7 @@ import cn.bmob.v3.exception.BmobException;
 import cn.bmob.v3.listener.FindListener;
 
 //从通讯录导入好友
-public class ContactFirendActivity extends AppCompatActivity {
+public class ContactFirendActivity extends BaseBackActivity {
     private RecyclerView mContactView;
     //通过键值对存储姓名手机
     private Map<String,String> mContactMap  = new HashMap<>();

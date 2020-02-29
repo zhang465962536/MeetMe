@@ -38,7 +38,7 @@ import cn.bmob.v3.listener.FindListener;
  * 2.根据条件查询
  * 3.推荐好友
  */
-public class AddFriendActivity extends AppCompatActivity implements View.OnClickListener {
+public class AddFriendActivity extends BaseBackActivity implements View.OnClickListener {
     //标题
     public static final int TYPE_TITLE = 0;
     //内容
@@ -116,9 +116,7 @@ public class AddFriendActivity extends AppCompatActivity implements View.OnClick
                     viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                           /* UserInfoActivity.startActivity(AddFriendActivity.this,
-                                    model.getUserId());*/
-                           ToastUtil.QuickToast(" position " + position);
+                           UserInfoActivity.startActivity(AddFriendActivity.this, model.getUserId());
                         }
                     });
                 }
