@@ -124,6 +124,13 @@ public class BmobManager {
         baseQuery("objectId", objectId, listener);
     }
 
+    //查询我的所有的好友
+    public void queryMyFriends(FindListener<Friend> listener){
+        BmobQuery<Friend> query = new BmobQuery<>();
+        query.addWhereEqualTo("user",getUser());
+        query.findObjects(listener);
+    }
+
     //查询所有用户
     public void queryAllUser(FindListener<IMUser> listener){
         BmobQuery<IMUser> query = new BmobQuery<>();

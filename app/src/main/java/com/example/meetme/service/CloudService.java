@@ -10,12 +10,15 @@ import androidx.annotation.Nullable;
 
 import com.example.framework.cloud.CloudManager;
 import com.example.framework.entity.Constants;
+import com.example.framework.gson.TextBean;
 import com.example.framework.utils.LogUtils;
 import com.example.framework.utils.SpUtils;
+import com.google.gson.Gson;
 
 import io.rong.imlib.OnReceiveMessageListener;
 import io.rong.imlib.RongIMClient;
 import io.rong.imlib.model.Message;
+import io.rong.message.TextMessage;
 
 //融云服务
 public class CloudService extends Service {
@@ -44,6 +47,27 @@ public class CloudService extends Service {
            @Override
            public boolean onReceived(Message message, int i) {
                LogUtils.i(" message  " + message);
+               String objectName = message.getObjectName();
+               //文本消息
+               if(objectName.equals(CloudManager.MSG_TEXT_NAME)){
+                   //获取消息主体
+                   TextMessage textMessage = (TextMessage) message.getContent();
+                    //获取发送过来的消息
+                   String content = textMessage.getContent();
+                   LogUtils.i(" content " + content);
+                   //解析消息
+                   TextBean textBean = new Gson().fromJson(content, TextBean.class);
+                   //普通消息
+                   if(textBean.getType().equals(CloudManager.TYPE_TEXT)){
+
+                   }else if(textBean.getType().equals(CloudManager.TYPE_ADD_FRIEND)){
+                       //添加好友消息
+                        LogUtils.i("添加好友消息");
+                   }else if(textBean.getType().equals(CloudManager.TYPE_ARGEED_FRIEND)){
+                       //同意添加好友消息
+
+                   }
+               }
                return false;
            }
        });

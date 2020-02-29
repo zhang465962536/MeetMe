@@ -3,6 +3,9 @@ package com.example.framework.cloud;
 import android.content.Context;
 
 import com.example.framework.utils.LogUtils;
+import com.google.gson.JsonObject;
+
+import org.json.JSONObject;
 
 import java.security.PrivateKey;
 
@@ -159,5 +162,18 @@ public class CloudManager {
                 null,
                 iSendMessageCallback
         );
+    }
+
+    // 发送文本消息 添加好友使用
+    public void sendTextMessage(String msg,String type,String targerId){
+        JSONObject jsonObject = new JSONObject();
+        try {
+           jsonObject.put("msg",msg);
+           //如果没有这个Type 就是一条普通消息
+            jsonObject.put("type",type);
+            sendTextMessage(jsonObject.toString(),targerId);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 }
