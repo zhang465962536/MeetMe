@@ -13,6 +13,7 @@ import cn.bmob.v3.exception.BmobException;
 import cn.bmob.v3.listener.FindListener;
 import cn.bmob.v3.listener.LogInListener;
 import cn.bmob.v3.listener.QueryListener;
+import cn.bmob.v3.listener.SaveListener;
 import cn.bmob.v3.listener.UpdateListener;
 import cn.bmob.v3.listener.UploadFileListener;
 
@@ -127,5 +128,13 @@ public class BmobManager {
     public void queryAllUser(FindListener<IMUser> listener){
         BmobQuery<IMUser> query = new BmobQuery<>();
         query.findObjects(listener);
+    }
+
+    //账号密码登录
+    public void loginByAccount(String userName, String pw, SaveListener<IMUser> listener) {
+        IMUser imUser = new IMUser();
+        imUser.setUsername(userName);
+        imUser.setPassword(pw);
+        imUser.login(listener);
     }
 }

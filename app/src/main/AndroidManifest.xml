@@ -11,8 +11,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".ui.ContactFirendActivity"></activity>
-        <activity android:name=".ui.IndexActivity" /> <!-- 上传头像 -->
+        <activity android:name=".ui.TestLoginActivity"></activity>
+        <activity android:name=".ui.ContactFirendActivity" />
+        <activity android:name=".ui.AddFriendActivity" /> <!-- 上传头像 -->
         <activity
             android:name=".ui.FirstUploadActivity"
             android:label="@string/text_upload_title" />
@@ -27,7 +28,7 @@
             android:name=".MainActivity"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar" /> <!-- 闪屏页 -->
         <activity
-            android:name=".ui.AddFriendActivity"
+            android:name=".ui.IndexActivity"
             android:theme="@style/AppThemeFull">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

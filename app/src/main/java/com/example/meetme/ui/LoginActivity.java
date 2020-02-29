@@ -91,6 +91,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         tv_test_login = (TextView) findViewById(R.id.tv_test_login);
         tv_user_agreement = (TextView) findViewById(R.id.tv_user_agreement);
 
+        tv_test_login.setOnClickListener(this);
         btn_send_code.setOnClickListener(this);
         btn_login.setOnClickListener(this);
         //取出保存的手机号码显示在EditText
@@ -129,6 +130,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 break;
             case R.id.btn_login:
                 login();
+            case R.id.tv_test_login:
+                startActivity(new Intent(this, TestLoginActivity.class));
                 break;
         }
     }
