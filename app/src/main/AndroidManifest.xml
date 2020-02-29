@@ -11,8 +11,10 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".ui.UserInfoActivity"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar"></activity>
+        <activity android:name=".ui.NewFriendActivity"></activity>
+        <activity
+            android:name=".ui.UserInfoActivity"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
         <activity android:name=".ui.TestLoginActivity" />
         <activity android:name=".ui.ContactFirendActivity" />
         <activity android:name=".ui.AddFriendActivity" /> <!-- 上传头像 -->

@@ -2,7 +2,10 @@ package com.example.framework.bmob;
 
 import android.content.Context;
 
+import com.example.framework.utils.CommonUtils;
+
 import java.io.File;
+import java.util.List;
 
 import cn.bmob.v3.Bmob;
 import cn.bmob.v3.BmobQuery;
@@ -143,5 +146,28 @@ public class BmobManager {
         imUser.setUsername(userName);
         imUser.setPassword(pw);
         imUser.login(listener);
+    }
+
+    //添加好友
+    public void addFriend(IMUser imUser,SaveListener<String> listener){
+        Friend friend = new Friend();
+        friend.setUser(getUser());
+        friend.setFriendUser(imUser);
+        friend.save(listener);
+    }
+
+    //添加好友 通过id
+    public void addFriend(String id,SaveListener<String> listener){
+        queryObjectIdUser(id, new FindListener<IMUser>() {
+            @Override
+            public void done(List<IMUser> list, BmobException e) {
+                if(e == null){
+                    if(CommonUtils.isEmpty(list)){
+                        IMUser imUser = list.get(0);
+                        addFriend(imUser,listener);
+                    }
+                }
+            }
+        });
     }
 }

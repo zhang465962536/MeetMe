@@ -28,7 +28,7 @@ public class LitePalHelper {
     }
 
     //保存数据基类
-    public void baseSave(LitePalSupport support){
+    private void baseSave(LitePalSupport support){
         support.save();
     }
 
@@ -44,7 +44,7 @@ public class LitePalHelper {
     }
 
     //查询所有数据基类
-    public List<? extends LitePalSupport> baseQuery(Class cls){
+    private List<? extends LitePalSupport> baseQuery(Class cls){
         return LitePal.findAll(cls);
     }
 
