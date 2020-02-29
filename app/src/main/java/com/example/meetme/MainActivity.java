@@ -19,8 +19,10 @@ import androidx.fragment.app.FragmentTransaction;
 import com.example.framework.base.BaseUIActivity;
 import com.example.framework.bmob.BmobManager;
 import com.example.framework.entity.Constants;
+import com.example.framework.gson.TokenBean;
 import com.example.framework.java.SimulationData;
 import com.example.framework.manager.DialogManager;
+import com.example.framework.manager.HttpManager;
 import com.example.framework.utils.LogUtils;
 import com.example.framework.utils.SpUtils;
 import com.example.framework.view.DialogView;
@@ -28,9 +30,21 @@ import com.example.meetme.fragment.ChatFragment;
 import com.example.meetme.fragment.MeFragment;
 import com.example.meetme.fragment.SquareFragment;
 import com.example.meetme.fragment.StarFragment;
+import com.example.meetme.service.CloudService;
 import com.example.meetme.ui.FirstUploadActivity;
+import com.google.gson.Gson;
 
+import java.util.HashMap;
 import java.util.List;
+
+import io.reactivex.Observable;
+import io.reactivex.ObservableEmitter;
+import io.reactivex.ObservableOnSubscribe;
+import io.reactivex.Scheduler;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Consumer;
+import io.reactivex.schedulers.Schedulers;
 //主页
 
 /**
@@ -73,6 +87,8 @@ public class MainActivity extends BaseUIActivity implements View.OnClickListener
     private DialogView mUploadView;
 
     private static final int UPLOAD_REQUEST_CODE = 1001;
+
+    private Disposable disposable;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -169,10 +185,58 @@ public class MainActivity extends BaseUIActivity implements View.OnClickListener
     //创建TOKEN
     private void createToken() {
         LogUtils.e("createToken");
+        /**
+         * 1.去融云后台获取Token
+         * 2.连接融云
+         */
+        //上传表单参数
+        final HashMap<String,String> map = new HashMap<>();
+        map.put("userId", BmobManager.getInstance().getUser().getObjectId());
+        map.put("name", BmobManager.getInstance().getUser().getTokenNickName());
+        map.put("portraitUri", BmobManager.getInstance().getUser().getTokenPhoto());
+
+        //通过异步Okhttp 请求Token
+        disposable = Observable.create(new ObservableOnSubscribe<String>() {
+            @Override
+            public void subscribe(ObservableEmitter<String> emitter) throws Exception {
+                //执行请求过程
+                String json = HttpManager.getInstance().postCloudToken(map);
+                //使用发射器将json发射出去
+                emitter.onNext(json);
+                emitter.onComplete();
+            }
+            //线程调度 线程切换
+        }).subscribeOn(Schedulers.newThread())
+        .subscribeOn(AndroidSchedulers.mainThread())
+        .subscribe(new Consumer<String>() {
+            @Override
+            public void accept(String s) throws Exception {
+                //请求Token 结果 返回 返回码 用户Token userId
+                LogUtils.i("TokenResult " + s);
+                //解析Json 数据
+                    parsingCloudToken(s);
+            }
+        });
+
+    }
+
+    //解析Token 返回Json 数据
+    private void parsingCloudToken(String s) {
+        TokenBean tokenBean = new Gson().fromJson(s, TokenBean.class);
+        if(tokenBean.getCode() == 200){
+            if(!TextUtils.isEmpty(tokenBean.getToken())){
+                //保存Token
+                SpUtils.getInstance().putString(Constants.SP_TOKEN,tokenBean.getToken());
+                //启动融云服务
+                startCloudService();
+            }
+        }
     }
 
     //启动云服务去连接融云服务
     private void startCloudService() {
+        //启动云服务取连接融云服务
+        startService(new Intent(this, CloudService.class));
     }
 
     //初始化4个Fragment
@@ -367,5 +431,13 @@ public class MainActivity extends BaseUIActivity implements View.OnClickListener
             }
         }
         super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if(disposable.isDisposed()){
+            disposable.dispose();
+        }
     }
 }
