@@ -10,6 +10,8 @@ import com.example.framework.utils.LogUtils;
 import com.example.framework.utils.SpUtils;
 import com.example.framework.utils.ToastUtil;
 
+import org.litepal.LitePal;
+
 //创建Framework Molde隔离工具类 和逻辑代码
 public class Framework {
     //单例封装通用工具
@@ -42,8 +44,8 @@ public class Framework {
        BmobManager.getInstance().initBmob(mContext);
         ToastUtil.initToast(mContext);
         CloudManager.getInstance().initCloud(mContext);
-       /* LitePal.initialize(mContext);
-        MapManager.getInstance().initMap(mContext);
+        LitePal.initialize(mContext);
+       /* MapManager.getInstance().initMap(mContext);
         WindowHelper.getInstance().initWindow(mContext);
         CrashReport.initCrashReport(mContext, BUGLY_KEY, BuildConfig.LOG_DEBUG);
         ZXingLibrary.initDisplayOpinion(mContext);

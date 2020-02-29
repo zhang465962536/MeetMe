@@ -9,6 +9,7 @@ import android.util.Log;
 import androidx.annotation.Nullable;
 
 import com.example.framework.cloud.CloudManager;
+import com.example.framework.db.LitePalHelper;
 import com.example.framework.entity.Constants;
 import com.example.framework.gson.TextBean;
 import com.example.framework.utils.LogUtils;
@@ -61,8 +62,9 @@ public class CloudService extends Service {
                    if(textBean.getType().equals(CloudManager.TYPE_TEXT)){
 
                    }else if(textBean.getType().equals(CloudManager.TYPE_ADD_FRIEND)){
-                       //添加好友消息
+                       //添加好友消息 存入本地数据库
                         LogUtils.i("添加好友消息");
+                       LitePalHelper.getInstance().saveNewFriend(textBean.getMsg(),message.getSenderUserId());
                    }else if(textBean.getType().equals(CloudManager.TYPE_ARGEED_FRIEND)){
                        //同意添加好友消息
 
