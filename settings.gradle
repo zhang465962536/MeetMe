@@ -1,2 +1,2 @@
-include ':app', ':framework'
+include ':app', ':framework', ':IMLib'
 rootProject.name='MeetMe'

@@ -4,6 +4,7 @@ package com.example.framework;
 import android.content.Context;
 
 import com.example.framework.bmob.BmobManager;
+import com.example.framework.cloud.CloudManager;
 import com.example.framework.helper.GlideHelper;
 import com.example.framework.utils.LogUtils;
 import com.example.framework.utils.SpUtils;
@@ -40,8 +41,8 @@ public class Framework {
         SpUtils.getInstance().initSp(mContext);
        BmobManager.getInstance().initBmob(mContext);
         ToastUtil.initToast(mContext);
-        /*CloudManager.getInstance().initCloud(mContext);
-        LitePal.initialize(mContext);
+        CloudManager.getInstance().initCloud(mContext);
+       /* LitePal.initialize(mContext);
         MapManager.getInstance().initMap(mContext);
         WindowHelper.getInstance().initWindow(mContext);
         CrashReport.initCrashReport(mContext, BUGLY_KEY, BuildConfig.LOG_DEBUG);

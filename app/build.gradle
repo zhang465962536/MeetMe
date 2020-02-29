@@ -45,6 +45,9 @@ android {
         //调试版本使用 正式发布版本可以去掉
         //最小化打包资源文件
         resConfigs("zh", "xxhdpi")
+        ndk {
+            //abiFilters "armeabi-v7a", "arm64-v8a"
+        }
     }
     buildTypes {
         debug {

@@ -1,5 +1,6 @@
 package com.example.framework.manager;
 
+import com.example.framework.cloud.CloudManager;
 import com.example.framework.utils.SHA1;
 
 import java.io.IOException;

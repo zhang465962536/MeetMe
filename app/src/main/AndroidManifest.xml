@@ -37,6 +37,16 @@
             </intent-filter>
         </activity> <!-- 云服务 -->
         <service android:name=".service.CloudService" /> <!-- FileProvide  exported 不能跨进程访问 -->
+<!--离线消息-->
+        <receiver
+            android:name=".receiver.SealNotificationReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="io.rong.push.intent.MESSAGE_ARRIVED" />
+                <action android:name="io.rong.push.intent.MESSAGE_CLICKED" />
+                <action android:name="io.rong.push.intent.THIRD_PARTY_PUSH_STATE" />
+            </intent-filter>
+        </receiver>
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="com.example.meetme.fileprovider"
