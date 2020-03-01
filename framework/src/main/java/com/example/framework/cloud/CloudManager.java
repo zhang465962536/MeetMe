@@ -8,6 +8,7 @@ import com.google.gson.JsonObject;
 import org.json.JSONObject;
 
 import java.security.PrivateKey;
+import java.util.List;
 
 import io.rong.imlib.IResultCallback;
 import io.rong.imlib.IRongCallback;
@@ -28,7 +29,7 @@ public class CloudManager {
     public static final String MSG_TEXT_NAME = "RC:TxtMsg"; //文字消息
     public static final String MSG_IMAGE_NAME = "RC:ImgMsg";  //图片消息
     public static final String MSG_LOCATION_NAME = "RC:LBSMsg"; //位置消息
-    public static final String MSG_Voice_NAME = "RC:VcMsg"; //语音消息
+    public static final String MSG_VOICE_NAME = "RC:VcMsg"; //语音消息
 
     //Msg Type
 
@@ -175,5 +176,10 @@ public class CloudManager {
         }catch (Exception e){
             e.printStackTrace();
         }
+    }
+
+    //获取用   户的所有本地的会话记录
+    public void getConversationList(RongIMClient.ResultCallback<List<Conversation>> callback){
+        RongIMClient.getInstance().getConversationList(callback);
     }
 }

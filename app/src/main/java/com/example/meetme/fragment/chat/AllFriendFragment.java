@@ -11,7 +11,7 @@ import androidx.annotation.Nullable;
 import com.example.framework.base.BaseFragment;
 import com.example.meetme.R;
 
-//所有好友
+//全部好友
 public class AllFriendFragment extends BaseFragment {
 
     @Nullable

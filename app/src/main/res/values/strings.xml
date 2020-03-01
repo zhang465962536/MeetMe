@@ -93,6 +93,7 @@
     <string name="text_chat_record_video">[视频]</string>
     <string name="text_chat_record_img">[图片]</string>
     <string name="text_chat_record_location">[位置]</string>
+    <string name="text_chat_record_voice">[语音]</string>
 
     <string name="text_call_record_un_answer">[未接电话]</string>
     <string name="text_chat_record_dial">[已拨电话]</string>

@@ -66,16 +66,21 @@ public class ChatFragment extends BaseFragment {
             mTabLayout.addTab(mTabLayout.newTab().setText(mTitle[i]));
         }
 
+        //预加载
         mViewPager.setOffscreenPageLimit(mTitle.length);
         mViewPager.setAdapter(new ChatPagerAdapter(getFragmentManager()));
+        //绑定ViewPager 进行联动
         mTabLayout.setupWithViewPager(mViewPager);
 
+        //监听TabLayout 滑动
         mTabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            //选择Tab 就切换它的样式
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
                 defTabStyle(tab, 20);
             }
 
+            //解绑 滑动得时候Tab Title 字体变大
             @Override
             public void onTabUnselected(TabLayout.Tab tab) {
                 tab.setCustomView(null);
