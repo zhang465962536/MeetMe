@@ -151,7 +151,7 @@ public class CloudManager {
  *                    如果发送 sdk 中默认的消息类型，例如 RC:TxtMsg, RC:VcMsg, RC:ImgMsg，则不需要填写，默认已经指定。
      */
     //发送文本消息
-    public void sendTextMessage(String msg, String targetId) {
+    private void sendTextMessage(String msg, String targetId) {
         LogUtils.i("sendTextMessage " + msg);
         // 构建文本消息实例
         TextMessage textMessage = TextMessage.obtain(msg);
@@ -178,8 +178,27 @@ public class CloudManager {
         }
     }
 
-    //获取用   户的所有本地的会话记录
+    //获取用户的所有本地的会话记录
     public void getConversationList(RongIMClient.ResultCallback<List<Conversation>> callback){
         RongIMClient.getInstance().getConversationList(callback);
     }
+
+
+    //获取本地历史消息记录
+    /*
+   Conversation.ConversationType.PRIVATE 会话类型 为私有
+   targetId 目标ID
+   -1 最后一条消息的id 获取此消息之前的count条消息 没有消息第一次调用应设置为 -1
+   1000 要获取消息的数量
+   callback 获取历史消息记录的回调 按照时间 顺序从新到旧排序
+     */
+    public void getHistoryMessage(String targetId, RongIMClient.ResultCallback<List<Message>> callback){
+        RongIMClient.getInstance().getHistoryMessages(Conversation.ConversationType.PRIVATE, targetId, -1, 1000, callback);
+    }
+
+    //获取服务器历史消息记录
+    public void getRemoteHistoryMessages(String targetId, RongIMClient.ResultCallback<List<Message>> callback) {
+        RongIMClient.getInstance().getRemoteHistoryMessages(Conversation.ConversationType.PRIVATE, targetId, 0, 20, callback);
+    }
+
 }

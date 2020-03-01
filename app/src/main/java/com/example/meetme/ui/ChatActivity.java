@@ -21,13 +21,22 @@ import com.example.framework.base.BaseUIActivity;
 import com.example.framework.bmob.BmobManager;
 import com.example.framework.cloud.CloudManager;
 import com.example.framework.entity.Constants;
+import com.example.framework.gson.TextBean;
+import com.example.framework.utils.CommonUtils;
 import com.example.framework.utils.LogUtils;
 import com.example.meetme.R;
 import com.example.meetme.model.ChatModel;
+import com.google.gson.Gson;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
+
+import io.rong.imlib.RongIMClient;
+import io.rong.imlib.model.Message;
+import io.rong.message.TextMessage;
 
 
 /**
@@ -37,6 +46,13 @@ import java.util.List;
  * 3.加载我们的历史记录
  * 4.实时更新我们的聊天信息
  * 5.发送消息
+ * <p>
+ * 发送图片逻辑
+ * 1.读取(相机和相册)
+ * 2.发送图片消息
+ * 3.完成我们适配器的UI
+ * 4.完成Service的图片接收逻辑
+ * 5.通知UI刷新
  * <p>
  * 发送图片逻辑
  * 1.读取(相机和相册)
@@ -157,7 +173,7 @@ public class ChatActivity extends BaseBackActivity implements View.OnClickListen
 
     private void initView() {
         mChatView = (RecyclerView) findViewById(R.id.mChatView);
-        /* et_input_msg = (EditText) findViewById(R.id.et_input_msg);*/
+         et_input_msg = (EditText) findViewById(R.id.et_input_msg);
         btn_send_msg = (Button) findViewById(R.id.btn_send_msg);
 
         ll_voice = (LinearLayout) findViewById(R.id.ll_voice);
@@ -232,10 +248,91 @@ public class ChatActivity extends BaseBackActivity implements View.OnClickListen
 
         //加载好友对方相关信息
         loadMeInfo();
-
-        addText(0,"你好呀！张小黑");
-        addText(1,"你好，嘿嘿嘿！");
+        //测试使用
+        //addText(0,"你好呀！张小黑");
+        //addText(1,"你好，嘿嘿嘿！");
+        queryMessage();
     }
+
+    //查询聊天记录
+    private void queryMessage() {
+        //先从本地查询
+        CloudManager.getInstance().getHistoryMessage(yourUserId, new RongIMClient.ResultCallback<List<Message>>() {
+            @Override
+            public void onSuccess(List<Message> messages) {
+                if (CommonUtils.isEmpty(messages)) {
+                    try {
+                        parsingListMessage(messages);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                } else {
+                    //如果本地没有聊天记录 去服务器查询
+                    queryRemoteMessage();
+                }
+            }
+
+            @Override
+            public void onError(RongIMClient.ErrorCode errorCode) {
+                LogUtils.e("errorCode " + errorCode);
+            }
+        });
+    }
+
+    //查询服务器历史记录
+    private void queryRemoteMessage() {
+        CloudManager.getInstance().getRemoteHistoryMessages(yourUserId, new RongIMClient.ResultCallback<List<Message>>() {
+            @Override
+            public void onSuccess(List<Message> messages) {
+                if(CommonUtils.isEmpty(messages)){
+                    //解析历史记录
+                    try {
+                        parsingListMessage(messages);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+
+            }
+
+            @Override
+            public void onError(RongIMClient.ErrorCode errorCode) {
+                LogUtils.e(" errorCode " +errorCode);
+            }
+        });
+    }
+
+    //解析历史记录
+    private void parsingListMessage(List<Message> messages) throws Exception{
+        //对消息列表进行倒序处理 否则无法正常显示
+        Collections.reverse(messages);
+        //遍历消息
+        for (int i = 0; i < messages.size(); i++) {
+            Message m = messages.get(i);
+            String objectName = m.getObjectName();
+            if (objectName.equals(CloudManager.MSG_TEXT_NAME)) {
+                TextMessage textMessage = (TextMessage) m.getContent();
+                String msg = textMessage.getContent();
+                LogUtils.i(" msg " + msg);
+                TextBean textBean = new Gson().fromJson(msg,TextBean.class);
+                if(textBean.getType().equals(CloudManager.TYPE_TEXT)){
+                    //添加到UI 判断是对方发送 还是 我自己发送
+                    if(m.getSenderUserId().equals(yourUserId)){
+                        //对方发送
+                        addText(0,textBean.getMsg());
+                    }else {
+                        //我自己发送
+                        addText(1,textBean.getMsg());
+                    }
+                }
+            } else if (objectName.equals(CloudManager.MSG_IMAGE_NAME)) {
+
+            } else if (objectName.equals(CloudManager.MSG_LOCATION_NAME)) {
+
+            }
+        }
+    }
+
 
     private void loadMeInfo() {
         Intent intent = getIntent();
@@ -256,7 +353,18 @@ public class ChatActivity extends BaseBackActivity implements View.OnClickListen
 
     @Override
     public void onClick(View v) {
-
+        switch (v.getId()){
+            case R.id.btn_send_msg:
+                String inputText = et_input_msg.getText().toString().trim();
+                if(TextUtils.isEmpty(inputText)){
+                    return;
+                }
+                CloudManager.getInstance().sendTextMessage(inputText,CloudManager.TYPE_TEXT,yourUserId);
+                addText(1,inputText);
+                //清空输入框
+                et_input_msg.setText("");
+                break;
+        }
     }
 
     //添加数据的基类
