@@ -67,6 +67,7 @@ dependencies {
     api rootProject.ext.dependencies["buglyndk"]
     api rootProject.ext.dependencies["zxing"]
     api rootProject.ext.dependencies["videoplayer"]
+    api rootProject.ext.dependencies["photoview"]
 
     //融云IM
     api project(path: ':IMLib')

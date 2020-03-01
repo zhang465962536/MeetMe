@@ -4,6 +4,7 @@ import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
 import android.os.RemoteException;
+import android.text.TextUtils;
 import android.util.Log;
 
 import androidx.annotation.Nullable;
@@ -14,6 +15,7 @@ import com.example.framework.db.LitePalHelper;
 import com.example.framework.db.NewFriend;
 import com.example.framework.entity.Constants;
 import com.example.framework.event.EventManager;
+import com.example.framework.event.MessageEvent;
 import com.example.framework.gson.TextBean;
 import com.example.framework.utils.CommonUtils;
 import com.example.framework.utils.LogUtils;
@@ -34,6 +36,7 @@ import io.reactivex.schedulers.Schedulers;
 import io.rong.imlib.OnReceiveMessageListener;
 import io.rong.imlib.RongIMClient;
 import io.rong.imlib.model.Message;
+import io.rong.message.ImageMessage;
 import io.rong.message.TextMessage;
 
 //融云服务
@@ -77,7 +80,11 @@ public class CloudService extends Service {
                     TextBean textBean = new Gson().fromJson(content, TextBean.class);
                     //普通消息
                     if (textBean.getType().equals(CloudManager.TYPE_TEXT)) {
-
+                        //接收到普通消息的时候刷新 聊天消息 使用EventBus 发送事件
+                        MessageEvent event = new MessageEvent(EventManager.FLAG_SEND_TEXT);
+                        event.setText(textBean.getMsg());
+                        event.setUserId(message.getSenderUserId());
+                        EventManager.post(event);
                     } else if (textBean.getType().equals(CloudManager.TYPE_ADD_FRIEND)) {
                         //添加好友消息 存入本地数据库
                         LogUtils.i("添加好友消息");
@@ -128,11 +135,24 @@ public class CloudService extends Service {
                             }
                         });
                     }
+                }else if(objectName.equals(CloudManager.MSG_IMAGE_NAME)){
+                    ImageMessage imageMessage = (ImageMessage) message.getContent();
+                    String url = imageMessage.getRemoteUri().toString();
+                    if(!TextUtils.isEmpty(url)){
+                        LogUtils.i(" url  " + url);
+                        //EventBus发送消息
+                        MessageEvent event = new MessageEvent(EventManager.FLAG_SEND_IMAGE);
+                        event.setImgUrl(url);
+                        event.setUserId(message.getSenderUserId());
+                        EventManager.post(event);
+                    }
                 }
                 return false;
             }
         });
     }
+
+
 
     @Override
     public void onDestroy() {

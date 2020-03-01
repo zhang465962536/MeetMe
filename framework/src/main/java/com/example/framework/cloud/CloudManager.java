@@ -1,12 +1,14 @@
 package com.example.framework.cloud;
 
 import android.content.Context;
+import android.net.Uri;
 
 import com.example.framework.utils.LogUtils;
 import com.google.gson.JsonObject;
 
 import org.json.JSONObject;
 
+import java.io.File;
 import java.security.PrivateKey;
 import java.util.List;
 
@@ -15,6 +17,7 @@ import io.rong.imlib.IRongCallback;
 import io.rong.imlib.RongIMClient;
 import io.rong.imlib.model.Conversation;
 import io.rong.imlib.model.Message;
+import io.rong.message.ImageMessage;
 import io.rong.message.TextMessage;
 
 //融云管理
@@ -178,6 +181,40 @@ public class CloudManager {
         }
     }
 
+    private RongIMClient.SendImageMessageCallback sendImageMessageCallback = new RongIMClient.SendImageMessageCallback() {
+        @Override
+        public void onAttached(Message message) {
+            LogUtils.i("onAttached");
+        }
+
+        @Override
+        public void onError(Message message, RongIMClient.ErrorCode errorCode) {
+            LogUtils.i("onError:" + errorCode);
+        }
+
+        @Override
+        public void onSuccess(Message message) {
+            LogUtils.i("onSuccess");
+        }
+
+        @Override
+        public void onProgress(Message message, int i) {
+            LogUtils.i("onProgress:" + i);
+        }
+    };
+
+    //发送图片消息
+    public void sendImageMessage(String targerId, File file){
+        ImageMessage imageMessage = ImageMessage.obtain(Uri.fromFile(file), Uri.fromFile(file), true);
+        RongIMClient.getInstance().sendImageMessage(
+                Conversation.ConversationType.PRIVATE,
+                targerId,
+                imageMessage,
+                null,
+                null,
+                sendImageMessageCallback);
+    }
+
     //获取用户的所有本地的会话记录
     public void getConversationList(RongIMClient.ResultCallback<List<Conversation>> callback){
         RongIMClient.getInstance().getConversationList(callback);
@@ -200,5 +237,7 @@ public class CloudManager {
     public void getRemoteHistoryMessages(String targetId, RongIMClient.ResultCallback<List<Message>> callback) {
         RongIMClient.getInstance().getRemoteHistoryMessages(Conversation.ConversationType.PRIVATE, targetId, 0, 20, callback);
     }
+
+
 
 }

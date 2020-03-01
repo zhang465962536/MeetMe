@@ -140,7 +140,6 @@ public class FileHelper {
     public String getRealPathFromURI(Context mContext, Uri uri) {
         String realPath = "";
         try {
-            //查询条件
             String[] proj = {MediaStore.Images.Media.DATA};
             CursorLoader cursorLoader = new CursorLoader(mContext, uri, proj, null, null, null);
             Cursor cursor = cursorLoader.loadInBackground();

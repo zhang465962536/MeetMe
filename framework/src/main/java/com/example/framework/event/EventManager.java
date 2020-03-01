@@ -48,5 +48,9 @@ public class EventManager {
         EventBus.getDefault().post(new MessageEvent(teype));
     }
 
+    public static void post(MessageEvent event){
+        EventBus.getDefault().post(event);
+    }
+
 
 }

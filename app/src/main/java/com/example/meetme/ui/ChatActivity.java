@@ -1,11 +1,14 @@
 package com.example.meetme.ui;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
@@ -21,12 +24,18 @@ import com.example.framework.base.BaseUIActivity;
 import com.example.framework.bmob.BmobManager;
 import com.example.framework.cloud.CloudManager;
 import com.example.framework.entity.Constants;
+import com.example.framework.event.EventManager;
+import com.example.framework.event.MessageEvent;
 import com.example.framework.gson.TextBean;
+import com.example.framework.helper.FileHelper;
 import com.example.framework.utils.CommonUtils;
 import com.example.framework.utils.LogUtils;
 import com.example.meetme.R;
 import com.example.meetme.model.ChatModel;
 import com.google.gson.Gson;
+
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -36,6 +45,7 @@ import java.util.List;
 
 import io.rong.imlib.RongIMClient;
 import io.rong.imlib.model.Message;
+import io.rong.message.ImageMessage;
 import io.rong.message.TextMessage;
 
 
@@ -46,6 +56,13 @@ import io.rong.message.TextMessage;
  * 3.加载我们的历史记录
  * 4.实时更新我们的聊天信息
  * 5.发送消息
+ * <p>
+ * 发送图片逻辑
+ * 1.读取(相机和相册)
+ * 2.发送图片消息
+ * 3.完成我们适配器的UI
+ * 4.完成Service的图片接收逻辑
+ * 5.通知UI刷新
  * <p>
  * 发送图片逻辑
  * 1.读取(相机和相册)
@@ -173,7 +190,7 @@ public class ChatActivity extends BaseBackActivity implements View.OnClickListen
 
     private void initView() {
         mChatView = (RecyclerView) findViewById(R.id.mChatView);
-         et_input_msg = (EditText) findViewById(R.id.et_input_msg);
+        et_input_msg = (EditText) findViewById(R.id.et_input_msg);
         btn_send_msg = (Button) findViewById(R.id.btn_send_msg);
 
         ll_voice = (LinearLayout) findViewById(R.id.ll_voice);
@@ -203,6 +220,16 @@ public class ChatActivity extends BaseBackActivity implements View.OnClickListen
                         viewHolder.setImageUrl(ChatActivity.this, R.id.iv_left_photo, yourUserPhoto);
                         break;
                     case TYPE_LEFT_IMAGE:
+                        viewHolder.setImageUrl(ChatActivity.this, R.id.iv_left_img, model.getImgUrl());
+                        viewHolder.setImageUrl(ChatActivity.this, R.id.iv_left_photo, yourUserPhoto);
+
+                        viewHolder.getView(R.id.iv_left_img).setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                               ImagePreviewActivity.startActivity(
+                                        ChatActivity.this, true, model.getImgUrl());
+                            }
+                        });
                         break;
                     case TYPE_LEFT_LOCATION:
                         break;
@@ -212,6 +239,27 @@ public class ChatActivity extends BaseBackActivity implements View.OnClickListen
                         viewHolder.setImageUrl(ChatActivity.this, R.id.iv_right_photo, meUserPhoto);
                         break;
                     case TYPE_RIGHT_IMAGE:
+                        if (TextUtils.isEmpty(model.getImgUrl())) {
+                            if (model.getLocalFile() != null) {
+                                //加载本地文件
+                                viewHolder.setImageFile(ChatActivity.this, R.id.iv_right_img, model.getLocalFile());
+                                viewHolder.getView(R.id.iv_right_img).setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        ImagePreviewActivity.startActivity(ChatActivity.this, false, model.getLocalFile().getPath());
+                                    }
+                                });
+                            }
+                        } else {
+                            viewHolder.setImageUrl(ChatActivity.this, R.id.iv_right_img, model.getImgUrl());
+                            viewHolder.getView(R.id.iv_right_img).setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    ImagePreviewActivity.startActivity(ChatActivity.this, true, model.getImgUrl());
+                                }
+                            });
+                        }
+                        viewHolder.setImageUrl(ChatActivity.this, R.id.iv_right_photo, meUserPhoto);
                         break;
                     case TYPE_RIGHT_LOCATION:
                         break;
@@ -284,7 +332,7 @@ public class ChatActivity extends BaseBackActivity implements View.OnClickListen
         CloudManager.getInstance().getRemoteHistoryMessages(yourUserId, new RongIMClient.ResultCallback<List<Message>>() {
             @Override
             public void onSuccess(List<Message> messages) {
-                if(CommonUtils.isEmpty(messages)){
+                if (CommonUtils.isEmpty(messages)) {
                     //解析历史记录
                     try {
                         parsingListMessage(messages);
@@ -297,13 +345,13 @@ public class ChatActivity extends BaseBackActivity implements View.OnClickListen
 
             @Override
             public void onError(RongIMClient.ErrorCode errorCode) {
-                LogUtils.e(" errorCode " +errorCode);
+                LogUtils.e(" errorCode " + errorCode);
             }
         });
     }
 
     //解析历史记录
-    private void parsingListMessage(List<Message> messages) throws Exception{
+    private void parsingListMessage(List<Message> messages) {
         //对消息列表进行倒序处理 否则无法正常显示
         Collections.reverse(messages);
         //遍历消息
@@ -314,19 +362,33 @@ public class ChatActivity extends BaseBackActivity implements View.OnClickListen
                 TextMessage textMessage = (TextMessage) m.getContent();
                 String msg = textMessage.getContent();
                 LogUtils.i(" msg " + msg);
-                TextBean textBean = new Gson().fromJson(msg,TextBean.class);
-                if(textBean.getType().equals(CloudManager.TYPE_TEXT)){
-                    //添加到UI 判断是对方发送 还是 我自己发送
-                    if(m.getSenderUserId().equals(yourUserId)){
-                        //对方发送
-                        addText(0,textBean.getMsg());
-                    }else {
-                        //我自己发送
-                        addText(1,textBean.getMsg());
+                try {
+                    TextBean textBean = new Gson().fromJson(msg, TextBean.class);
+                    if (textBean.getType().equals(CloudManager.TYPE_TEXT)) {
+                        //添加到UI 判断是对方发送 还是 我自己发送
+                        if (m.getSenderUserId().equals(yourUserId)) {
+                            //对方发送
+                            addText(0, textBean.getMsg());
+                        } else {
+                            //我自己发送
+                            addText(1, textBean.getMsg());
+                        }
+                    }
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+
+            } else if (objectName.equals(CloudManager.MSG_IMAGE_NAME)) {
+                ImageMessage imageMessage = (ImageMessage) m.getContent();
+                String url = imageMessage.getRemoteUri().toString();
+                if (!TextUtils.isEmpty(url)) {
+                    LogUtils.i("url:" + url);
+                    if (m.getSenderUserId().equals(yourUserId)) {
+                        addImage(0, url);
+                    } else {
+                        addImage(1, url);
                     }
                 }
-            } else if (objectName.equals(CloudManager.MSG_IMAGE_NAME)) {
-
             } else if (objectName.equals(CloudManager.MSG_LOCATION_NAME)) {
 
             }
@@ -353,17 +415,28 @@ public class ChatActivity extends BaseBackActivity implements View.OnClickListen
 
     @Override
     public void onClick(View v) {
-        switch (v.getId()){
+        switch (v.getId()) {
             case R.id.btn_send_msg:
                 String inputText = et_input_msg.getText().toString().trim();
-                if(TextUtils.isEmpty(inputText)){
+                if (TextUtils.isEmpty(inputText)) {
                     return;
                 }
-                CloudManager.getInstance().sendTextMessage(inputText,CloudManager.TYPE_TEXT,yourUserId);
-                addText(1,inputText);
+                CloudManager.getInstance().sendTextMessage(inputText, CloudManager.TYPE_TEXT, yourUserId);
+                addText(1, inputText);
                 //清空输入框
                 et_input_msg.setText("");
                 break;
+            case R.id.ll_voice:
+
+                break;
+            case R.id.ll_camera:
+                FileHelper.getInstance().toCamera(this);
+                break;
+            case R.id.ll_pic:
+                FileHelper.getInstance().toAlbum(this);
+                break;
+            case R.id.ll_location:
+               // LocationActivity.startActivity(this, true, 0, 0, "", LOCATION_REQUEST_CODE);
         }
     }
 
@@ -386,5 +459,84 @@ public class ChatActivity extends BaseBackActivity implements View.OnClickListen
         }
         model.setText(text);
         baseAddItem(model);
+    }
+
+    //添加图片  使用网络链接
+    private void addImage(int index, String url) {
+        ChatModel model = new ChatModel();
+        if (index == 0) {
+            model.setType(TYPE_LEFT_IMAGE);
+        } else {
+            model.setType(TYPE_RIGHT_IMAGE);
+        }
+        model.setImgUrl(url);
+        baseAddItem(model);
+    }
+
+    //添加图片  本地图片
+    private void addImage(int index, File file) {
+        ChatModel model = new ChatModel();
+        if (index == 0) {
+            model.setType(TYPE_LEFT_IMAGE);
+        } else {
+            model.setType(TYPE_RIGHT_IMAGE);
+        }
+        model.setLocalFile(file);
+        baseAddItem(model);
+    }
+
+    //接收Event事件  即接收对方发过来的消息
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onMessageEvent(MessageEvent event) {
+
+        //如果事件发过来的用户id 正好是 正在聊天 对方的id 即显示聊天消息
+        if (!event.getUserId().equals(yourUserId)) {
+            return;
+        }
+        switch (event.getType()) {
+            //接收发送文字事件
+            case EventManager.FLAG_SEND_TEXT:
+                LogUtils.i("event " + event);
+                addText(0, event.getText());
+                break;
+
+            //接收发送图片事件
+            case EventManager.FLAG_SEND_IMAGE:
+                LogUtils.i("event " + event);
+                addText(0, event.getImgUrl());
+                break;
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (resultCode == Activity.RESULT_OK) {
+            if (requestCode == FileHelper.CAMEAR_REQUEST_CODE) {
+                uploadFile = FileHelper.getInstance().getTempFile();
+            } else if (requestCode == FileHelper.ALBUM_REQUEST_CODE) {
+                Uri uri = data.getData();
+                if (uri != null) {
+                    //String path = uri.getPath();
+                    //获取真实的地址
+                    String path = FileHelper.getInstance().getRealPathFromURI(this, uri);
+                    //LogUtils.e("path:" + path);
+                    if (!TextUtils.isEmpty(path)) {
+                        uploadFile = new File(path);
+                    }
+                }
+            } else if (requestCode == LOCATION_REQUEST_CODE) {
+
+
+            } else if (requestCode == CHAT_INFO_REQUEST_CODE) {
+                finish();
+            }
+            if (uploadFile != null) {
+                //发送图片消息
+                CloudManager.getInstance().sendImageMessage(yourUserId, uploadFile);
+                //更新列表
+                addImage(1,uploadFile);
+            }
+        }
+        super.onActivityResult(requestCode, resultCode, data);
     }
 }
