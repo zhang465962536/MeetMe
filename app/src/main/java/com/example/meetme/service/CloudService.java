@@ -107,6 +107,9 @@ public class CloudService extends Service {
                                             if(!isHave){ //如果数据库中不存在该好友 就添加到好友申请列表中
                                                 LitePalHelper.getInstance().saveNewFriend(textBean.getMsg(), message.getSenderUserId());
                                             }
+                                        }else {
+                                            //如果查询到 没有好友 也是需要去添加的
+                                            LitePalHelper.getInstance().saveNewFriend(textBean.getMsg(), message.getSenderUserId());
                                         }
                                     }
                                 });

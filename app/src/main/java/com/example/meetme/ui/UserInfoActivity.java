@@ -18,6 +18,7 @@ import android.widget.Toast;
 
 import com.example.framework.adapter.CommomViewHolder;
 import com.example.framework.adapter.CommonAdapter;
+import com.example.framework.base.BaseBackActivity;
 import com.example.framework.base.BaseUIActivity;
 import com.example.framework.bmob.BmobManager;
 import com.example.framework.bmob.Friend;
@@ -186,7 +187,8 @@ public class UserInfoActivity extends BaseUIActivity implements View.OnClickList
                 DialogManager.getInstance().show(mAddFriendDialogView);
                 break;
             case R.id.btn_chat:
-
+                //跳转到聊天界面
+                ChatActivity.startActivity(UserInfoActivity.this,userId,imUser.getNickName(),imUser.getPhoto());
                 break;
             case R.id.btn_audio_chat:
 
@@ -208,7 +210,7 @@ public class UserInfoActivity extends BaseUIActivity implements View.OnClickList
             public void done(List<IMUser> list, BmobException e) {
                 if (e == null) {
                     if (CommonUtils.isEmpty(list)) {
-                        IMUser imUser = list.get(0);
+                         imUser = list.get(0);
                         //设置基本属性显示到界面上
                         updateUserInfo(imUser);
 
